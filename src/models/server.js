@@ -3,6 +3,7 @@ const { config } = require('../config')
 const { join } = require('path')
 const cors = require('cors')
 const userRoute = require('../routes/user')
+const authRoute = require('../routes/auth')
 const { dbConnection } = require('../db/config')
 
 class Server {
@@ -12,7 +13,8 @@ class Server {
     this.dbConnect()
     this.middlewares()
     this.paths = {
-      users: '/api/users'
+      users: '/api/users',
+      auth: '/api/auth'
     }
     this.routes()
   }
@@ -24,10 +26,8 @@ class Server {
   }
 
   routes() {
-    this.app.get('/', (req, res) => {
-      res.send('Hello world')
-    })
     this.app.use(this.paths.users, userRoute)
+    this.app.use(this.paths.auth, authRoute)
   }
 
   async dbConnect() {

@@ -38,7 +38,7 @@ const putUser = async (req = request, res = response) => {
 }
 const deleteUser = async (req = request, res = response) => {
   const id = req.params.id
-  // TODO: delete disk fisic
+  // delete disk fisic
   // const user = await UserModel.findByIdAndDelete()
   const user = await UserModel.findByIdAndUpdate(id, { state: false })
   res.json(user)

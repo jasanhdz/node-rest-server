@@ -5,6 +5,7 @@ const config = {
   dbUser: process.env.DB_USER,
   dbPass: process.env.DB_PASSWORD,
   dbName: process.env.DB_NAME,
+  secreteKey: process.env.SECRET_KEY
 }
 
 module.exports = {
