@@ -1,19 +1,47 @@
 const { request, response } = require('express')
+const UserModel = require('../models/user')
+const bcrypt = require('bcryptjs')
 
-const getUsers = (req = request, res = response) => {
-  const query = req.query
-  res.json({ msg: 'GET API - Users', query })
+const getUsers = async (req = request, res = response) => {
+  const { limit, from = 0 } = req.query
+  const query = { state: true }
+
+  const [total, users] = await Promise.all([
+    UserModel.countDocuments(query),
+    UserModel.find(query)
+      .skip(Number(from))
+      .limit(Number(limit))
+  ])
+  res.json({ total, users })
 }
-const postUser = (req = request, res = response) => {
-  const body = req.body
-  res.json({ msg: 'POST API - Users', body })
+const postUser = async (req = request, res = response) => {
+  const { name, email, password, role } = req.body
+  const user = new UserModel({ name, email, password, role })
+  // encrypt password
+  const salt = bcrypt.genSaltSync()
+  user.password = bcrypt.hashSync(password, salt)
+  // save database
+  await user.save()
+  res.json(user)
 }
-const putUser = (req = request, res = response) => {
+const putUser = async (req = request, res = response) => {
   const id = req.params.id
-  res.json({ msg: 'PUT API - Users', id })
+  const { _id, password, google, ...otherProps } = req.body
+
+  if(password) {
+    // encrypt password
+    const salt = bcrypt.genSaltSync()
+    otherProps.password = bcrypt.hashSync(password, salt)
+  }
+  const user = await UserModel.findByIdAndUpdate(id, otherProps)
+  res.json(user)
 }
-const deleteUser = (req = request, res = response) => {
-  res.json({ msg: 'DELETE API - Users' })
+const deleteUser = async (req = request, res = response) => {
+  const id = req.params.id
+  // TODO: delete disk fisic
+  // const user = await UserModel.findByIdAndDelete()
+  const user = await UserModel.findByIdAndUpdate(id, { state: false })
+  res.json(user)
 }
 
 

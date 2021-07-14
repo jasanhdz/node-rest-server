@@ -3,11 +3,13 @@ const { config } = require('../config')
 const { join } = require('path')
 const cors = require('cors')
 const userRoute = require('../routes/user')
+const { dbConnection } = require('../db/config')
 
 class Server {
   constructor() {
     this.app = express()
     this.port = config.port
+    this.dbConnect()
     this.middlewares()
     this.paths = {
       users: '/api/users'
@@ -26,6 +28,10 @@ class Server {
       res.send('Hello world')
     })
     this.app.use(this.paths.users, userRoute)
+  }
+
+  async dbConnect() {
+    await dbConnection()
   }
 
   listen() {
