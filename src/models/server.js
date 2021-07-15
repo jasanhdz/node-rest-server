@@ -2,8 +2,6 @@ const express = require('express')
 const { config } = require('../config')
 const { join } = require('path')
 const cors = require('cors')
-const userRoute = require('../routes/user')
-const authRoute = require('../routes/auth')
 const { dbConnection } = require('../db/config')
 
 class Server {
@@ -14,7 +12,10 @@ class Server {
     this.middlewares()
     this.paths = {
       users: '/api/users',
-      auth: '/api/auth'
+      categories: '/api/categories',
+      products: '/api/products',
+      auth: '/api/auth',
+      search: '/api/search'
     }
     this.routes()
   }
@@ -26,8 +27,11 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.paths.users, userRoute)
-    this.app.use(this.paths.auth, authRoute)
+    this.app.use(this.paths.users, require('../routes/user'))
+    this.app.use(this.paths.categories, require('../routes/category'))
+    this.app.use(this.paths.products, require('../routes/products'))
+    this.app.use(this.paths.auth, require('../routes/auth'))
+    this.app.use(this.paths.search, require('../routes/search'))
   }
 
   async dbConnect() {
