@@ -35,10 +35,20 @@ const productExistById = async (id = '') => {
   if(!product.state) throw new Error('Talk to the admin - state: false')
 }
 
+/**
+ * validity allowed collections 
+ */
+const allowedCollections = (collection = '', collections = []) => {
+  const isInclude = collections.includes(collection)
+  if(!isInclude) throw new Error(`La collection ${collection} no es permitida, ${collections}`)
+  return true
+} 
+
 module.exports = {
   isRoleValid,
   emailExist,
   userExistById,
   categoryExistById,
   productExistById,
+  allowedCollections
 }

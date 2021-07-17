@@ -6,7 +6,8 @@ const config = {
   dbPass: process.env.DB_PASSWORD,
   dbName: process.env.DB_NAME,
   secreteKey: process.env.SECRET_KEY,
-  googleClientId: process.env.GOOGLE_CLIENT_ID
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  cloudinaryURL: process.env.CLOUDINARY_URL
 }
 
 module.exports = {

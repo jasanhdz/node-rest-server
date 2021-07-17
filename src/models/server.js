@@ -3,6 +3,7 @@ const { config } = require('../config')
 const { join } = require('path')
 const cors = require('cors')
 const { dbConnection } = require('../db/config')
+const fileUpload = require('express-fileupload')
 
 class Server {
   constructor() {
@@ -15,15 +16,22 @@ class Server {
       categories: '/api/categories',
       products: '/api/products',
       auth: '/api/auth',
-      search: '/api/search'
+      search: '/api/search',
+      uploads: '/api/uploads'
     }
     this.routes()
   }
 
   middlewares() {
+    // reading and parsing of body
     this.app.use(express.json())
     this.app.use(cors())
     this.app.use(express.static(join(__dirname, '../../public')))
+    this.app.use(fileUpload({
+      useTempFiles : true,
+      tempFileDir : '/tmp/',
+      createParentPath: true
+    }))
   }
 
   routes() {
@@ -32,6 +40,7 @@ class Server {
     this.app.use(this.paths.products, require('../routes/products'))
     this.app.use(this.paths.auth, require('../routes/auth'))
     this.app.use(this.paths.search, require('../routes/search'))
+    this.app.use(this.paths.uploads, require('../routes/uploads'))
   }
 
   async dbConnect() {
