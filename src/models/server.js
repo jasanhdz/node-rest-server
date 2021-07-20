@@ -4,13 +4,14 @@ const { join } = require('path')
 const cors = require('cors')
 const { dbConnection } = require('../db/config')
 const fileUpload = require('express-fileupload')
+const { socketController } = require('../sockets/socket-controller')
 
 class Server {
   constructor() {
     this.app = express()
     this.port = config.port
-    this.dbConnect()
-    this.middlewares()
+    this.server = require('http').createServer(this.app)
+    this.io = require('socket.io')(this.server)
     this.paths = {
       users: '/api/users',
       categories: '/api/categories',
@@ -19,7 +20,10 @@ class Server {
       search: '/api/search',
       uploads: '/api/uploads'
     }
+    this.dbConnect()
+    this.middlewares()
     this.routes()
+    this.sockets()
   }
 
   middlewares() {
@@ -47,8 +51,12 @@ class Server {
     await dbConnection()
   }
 
+  sockets() {
+    this.io.on('connection', (socket) => socketController(socket, this.io))
+  }
+
   listen() {
-    this.app.listen(this.port, () => {
+    this.server.listen(this.port, () => {
       console.log(`Escuchando en el puerto http://localhost:${this.port}`)
     })
   }
